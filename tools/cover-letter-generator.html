@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cover Letter Generator — InterviewKit</title>
+  <meta name="description" content="Generate a short, tailored cover letter and a super-short version using a structured prompt." />
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#020617;
+      --panel2:#0b1224;
+      --line:#334155;
+      --text:#e5e7eb;
+      --muted:#cbd5f5;
+      --faint:#94a3b8;
+      --brand:#6366f1;
+      --radius:10px;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --max: 960px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a{ color: inherit; text-decoration:none; }
+
+    .container{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 14px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+    .brand h1{ margin:0; font-size: 18px; font-weight: 800; }
+    .brand p{ margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn.primary{ background: var(--brand); color: #fff; }
+    .btn.secondary{ background: transparent; border-color: var(--line); color: var(--text); }
+    .btn.ghost{ background: transparent; color: var(--muted); padding: 10px 10px; }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .inner{ padding: 18px; }
+
+    .titleRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    h2{ margin:0; font-size: 20px; }
+    .sub{ margin: 6px 0 0; color: var(--muted); font-size: 14px; max-width: 80ch; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 980px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    label{
+      display:block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input, textarea, select{
+      width:100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0b1224;
+      color: var(--text);
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    input, select{ height: 42px; }
+    textarea{ min-height: 110px; resize: vertical; }
+    textarea[readonly]{ opacity:.95; }
+
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 980px){
+      .row2{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .hint{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--faint);
+    }
+
+    .cta{
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cta p{ margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+    footer{
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      font-size: 12px;
+      color: var(--faint);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.72);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 750;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+      max-width: calc(100vw - 24px);
+      text-align:center;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="brand">
+        <h1><a href="../index.html">InterviewKit</a></h1>
+        <p>Free tools → full kit</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn ghost" href="../index.html">← Hub</a>
+        <a class="btn primary" id="buyTop" href="#" target="_blank" rel="noopener">Unlock all tools</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="inner">
+        <div class="titleRow">
+          <div>
+            <h2>Cover Letter Generator</h2>
+            <p class="sub">
+              Generate a short, tailored cover letter and a super-short version for email/LinkedIn.
+              Build a structured prompt, paste into ChatGPT, and refine quickly.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="row2">
+              <div>
+                <label for="name">Your name (optional)</label>
+                <input id="name" placeholder="e.g., Alex Johnson" />
+              </div>
+              <div>
+                <label for="tone">Tone</label>
+                <select id="tone">
+                  <option value="professional, confident, concise">Professional + concise</option>
+                  <option value="warm, friendly, professional">Warm + friendly</option>
+                  <option value="direct, no-fluff, confident">Direct + no-fluff</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row2" style="margin-top:10px;">
+              <div>
+                <label for="company">Company</label>
+                <input id="company" placeholder="e.g., Acme Inc." />
+              </div>
+              <div>
+                <label for="role">Role title</label>
+                <input id="role" placeholder="e.g., Sales Development Representative" />
+              </div>
+            </div>
+
+            <label for="highlights" style="margin-top:10px;">Your highlights (3–6 bullets)</label>
+            <textarea id="highlights" placeholder="• What you did&#10;• Tools you used&#10;• Results / metrics&#10;• Strengths that match the role"></textarea>
+
+            <label for="jd" style="margin-top:10px;">Job description (recommended)</label>
+            <textarea id="jd" placeholder="Paste the job description here..."></textarea>
+
+            <div class="actions">
+              <button class="btn primary" id="build">Build prompt</button>
+              <button class="btn secondary" id="copyPrompt" disabled>Copy prompt</button>
+              <button class="btn secondary" id="clear">Clear</button>
+            </div>
+
+            <div class="hint">Tip: Include 1–2 numbers (quota, revenue, time saved, volume, CSAT).</div>
+          </div>
+
+          <div>
+            <label for="prompt">Prompt (paste into ChatGPT)</label>
+            <textarea id="prompt" readonly placeholder="Your prompt will appear here."></textarea>
+
+            <div class="actions">
+              <button class="btn secondary" id="copyPrompt2" disabled>Copy prompt</button>
+            </div>
+
+            <label for="output" style="margin-top:12px;">Output (optional)</label>
+            <textarea id="output" placeholder="Paste ChatGPT results here (optional)..."></textarea>
+
+            <div class="actions">
+              <button class="btn secondary" id="copyOut">Copy output</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <div>
+            <strong>Want the full application workflow?</strong>
+            <p>Unlock tools for ATS keywords, resume tailoring, interview answers, follow-ups, and negotiation.</p>
+          </div>
+          <a class="btn primary" id="buyBottom" href="#" target="_blank" rel="noopener">Unlock all tools</a>
+        </div>
+
+        <footer>
+          <div>© <span id="year"></span> InterviewKit</div>
+          <div>Digital product • One-time purchase</div>
+        </footer>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const CHECKOUT_URL = "https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03";
+    document.getElementById("buyTop").href = CHECKOUT_URL;
+    document.getElementById("buyBottom").href = CHECKOUT_URL;
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const nameEl = document.getElementById("name");
+    const toneEl = document.getElementById("tone");
+    const companyEl = document.getElementById("company");
+    const roleEl = document.getElementById("role");
+    const highlightsEl = document.getElementById("highlights");
+    const jdEl = document.getElementById("jd");
+    const promptEl = document.getElementById("prompt");
+    const outEl = document.getElementById("output");
+
+    const buildBtn = document.getElementById("build");
+    const copy1 = document.getElementById("copyPrompt");
+    const copy2 = document.getElementById("copyPrompt2");
+    const clearBtn = document.getElementById("clear");
+    const copyOutBtn = document.getElementById("copyOut");
+
+    const toast = document.getElementById("toast");
+    let timer;
+
+    function toastMsg(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(timer);
+      timer = setTimeout(()=>toast.classList.remove("show"), 1400);
+    }
+    function setCopy(enabled){
+      copy1.disabled = !enabled;
+      copy2.disabled = !enabled;
+    }
+    async function copy(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch{ return false; }
+    }
+
+    buildBtn.onclick = () => {
+      const company = companyEl.value.trim();
+      const role = roleEl.value.trim();
+      const highlights = highlightsEl.value.trim();
+      const jd = jdEl.value.trim();
+      const tone = toneEl.value.trim() || "professional, confident, concise";
+      const name = nameEl.value.trim();
+
+      if(!company || !role || !highlights || !jd){
+        toastMsg("Company, role, highlights, and job description are required.");
+        return;
+      }
+
+      const prompt = `You are an expert career writer and recruiter.
+
+Task: Write TWO versions based on the job description and my highlights.
+
+Rules:
+- Keep it tailored to the role and company.
+- No fluff. Focus on fit + impact + evidence.
+- Use specifics from the job description and my highlights.
+- Use a clear, confident tone: ${tone}.
+- If a number is missing, use placeholders like [X%] or [N].
+
+Output:
+A) Short Cover Letter (150–220 words, 3–4 short paragraphs)
+B) Super-Short Version (2–3 sentences for email/LinkedIn)
+
+Company: ${company}
+Role: ${role}
+Candidate Name (optional): ${name || "[Name]"}
+
+My Highlights:
+"""
+${highlights}
+"""
+
+Job Description:
+"""
+${jd}
+"""`;
+
+      promptEl.value = prompt;
+      setCopy(true);
+      toastMsg("Prompt built.");
+    };
+
+    copy1.onclick = async()=> toastMsg(await copy(promptEl.value) ? "Prompt copied." : "Copy failed.");
+    copy2.onclick = async()=> toastMsg(await copy(promptEl.value) ? "Prompt copied." : "Copy failed.");
+
+    clearBtn.onclick = ()=>{
+      nameEl.value = "";
+      companyEl.value = "";
+      roleEl.value = "";
+      highlightsEl.value = "";
+      jdEl.value = "";
+      promptEl.value = "";
+      outEl.value = "";
+      setCopy(false);
+      toastMsg("Cleared.");
+      companyEl.focus();
+    };
+
+    copyOutBtn.onclick = async()=>{
+      if(!outEl.value.trim()){ toastMsg("Nothing to copy."); return; }
+      toastMsg(await copy(outEl.value) ? "Output copied." : "Copy failed.");
+    };
+  </script>
+</body>
+</html>
