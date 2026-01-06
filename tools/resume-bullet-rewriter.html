@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resume Bullet Rewriter — InterviewKit</title>
+  <meta name="description" content="Rewrite weak resume bullets into clear, quantified, impact-focused statements using a structured prompt." />
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#020617;
+      --panel2:#0b1224;
+      --line:#334155;
+      --text:#e5e7eb;
+      --muted:#cbd5f5;
+      --faint:#94a3b8;
+      --brand:#6366f1;
+      --radius:10px;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --max: 960px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a{ color: inherit; text-decoration:none; }
+
+    .container{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 14px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .brand p{
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn.primary{
+      background: var(--brand);
+      color: white;
+    }
+    .btn.secondary{
+      background: transparent;
+      border-color: var(--line);
+      color: var(--text);
+    }
+    .btn.ghost{
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 10px;
+    }
+    .btn:disabled{
+      opacity: .55;
+      cursor: not-allowed;
+      transform:none;
+    }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .inner{ padding: 18px; }
+
+    .titleRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    h2{ margin:0; font-size: 20px; }
+    .sub{ color: var(--muted); font-size: 14px; max-width: 80ch; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 980px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    label{
+      display:block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    textarea{
+      width:100%;
+      min-height: 140px;
+      resize: vertical;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0b1224;
+      color: var(--text);
+      padding: 12px;
+      font-size: 14px;
+    }
+    textarea[readonly]{ opacity:.95; }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .hint{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--faint);
+    }
+
+    .cta{
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cta p{ margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+    footer{
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      font-size: 12px;
+      color: var(--faint);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.72);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 750;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="brand">
+        <h1><a href="../index.html">InterviewKit</a></h1>
+        <p>Free tools → full kit</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn ghost" href="../index.html">← Hub</a>
+        <a class="btn primary" id="buyTop" href="#" target="_blank">Unlock all tools</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="inner">
+        <div class="titleRow">
+          <div>
+            <h2>Resume Bullet Rewriter</h2>
+            <p class="sub">
+              Turn weak resume bullets into clear, quantified, impact-focused statements.
+              This tool builds a structured prompt you can paste into ChatGPT.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="role">Role / Job title</label>
+            <textarea id="role" placeholder="e.g., Marketing Coordinator"></textarea>
+
+            <label for="bullet" style="margin-top:10px;">Current resume bullet</label>
+            <textarea id="bullet" placeholder="e.g., Responsible for social media posts..."></textarea>
+
+            <label for="jd" style="margin-top:10px;">Target job description (optional)</label>
+            <textarea id="jd" placeholder="Paste the job description (optional but recommended)..."></textarea>
+
+            <div class="actions">
+              <button class="btn primary" id="build">Build prompt</button>
+              <button class="btn secondary" id="copyPrompt" disabled>Copy prompt</button>
+              <button class="btn secondary" id="clear">Clear</button>
+            </div>
+
+            <div class="hint">Tip: Metrics and outcomes improve ATS matching and recruiter readability.</div>
+          </div>
+
+          <div>
+            <label for="prompt">Prompt (paste into ChatGPT)</label>
+            <textarea id="prompt" readonly placeholder="Your prompt will appear here."></textarea>
+
+            <div class="actions">
+              <button class="btn secondary" id="copyPrompt2" disabled>Copy prompt</button>
+            </div>
+
+            <label for="output" style="margin-top:12px;">Output (optional)</label>
+            <textarea id="output" placeholder="Paste ChatGPT results here (optional)..."></textarea>
+
+            <div class="actions">
+              <button class="btn secondary" id="copyOut">Copy output</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <div>
+            <strong>Want the full resume workflow?</strong>
+            <p>Unlock all tools for ATS keywords, summaries, cover letters, interviews, and negotiation.</p>
+          </div>
+          <a class="btn primary" id="buyBottom" href="#" target="_blank">Unlock all tools</a>
+        </div>
+
+        <footer>
+          <div>© <span id="year"></span> InterviewKit</div>
+          <div>Digital product • One-time purchase</div>
+        </footer>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CHECKOUT_URL = "https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03";
+    document.getElementById("buyTop").href = CHECKOUT_URL;
+    document.getElementById("buyBottom").href = CHECKOUT_URL;
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const roleEl = document.getElementById("role");
+    const bulletEl = document.getElementById("bullet");
+    const jdEl = document.getElementById("jd");
+    const promptEl = document.getElementById("prompt");
+    const outEl = document.getElementById("output");
+
+    const buildBtn = document.getElementById("build");
+    const copy1 = document.getElementById("copyPrompt");
+    const copy2 = document.getElementById("copyPrompt2");
+    const clearBtn = document.getElementById("clear");
+    const copyOutBtn = document.getElementById("copyOut");
+
+    const toast = document.getElementById("toast");
+    let timer;
+
+    function toastMsg(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(timer);
+      timer = setTimeout(()=>toast.classList.remove("show"), 1400);
+    }
+
+    function setCopy(enabled){
+      copy1.disabled = !enabled;
+      copy2.disabled = !enabled;
+    }
+
+    buildBtn.onclick = () => {
+      const role = roleEl.value.trim();
+      const bullet = bulletEl.value.trim();
+      if(!role || !bullet){
+        toastMsg("Role and bullet are required.");
+        return;
+      }
+      const jd = jdEl.value.trim();
+
+      const prompt = `You are a professional resume writer and recruiter.
+
+Task: Rewrite the resume bullet below into 3 strong, ATS-friendly versions.
+
+Guidelines:
+- Use clear action verbs.
+- Emphasize impact and outcomes.
+- Quantify results where reasonable (use placeholders if needed).
+- Align wording with the target role${jd ? " and job description" : ""}.
+- Keep each bullet concise (1–2 lines).
+
+Return 3 rewritten bullets.
+
+Role:
+${role}
+
+Current Bullet:
+"${bullet}"
+${jd ? `\nTarget Job Description:\n"""\n${jd}\n"""` : ""}`;
+
+      promptEl.value = prompt;
+      setCopy(true);
+      toastMsg("Prompt built.");
+    };
+
+    async function copy(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch{ return false; }
+    }
+
+    copy1.onclick = async()=> toastMsg(await copy(promptEl.value) ? "Prompt copied." : "Copy failed.");
+    copy2.onclick = async()=> toastMsg(await copy(promptEl.value) ? "Prompt copied." : "Copy failed.");
+
+    clearBtn.onclick = ()=>{
+      roleEl.value = "";
+      bulletEl.value = "";
+      jdEl.value = "";
+      promptEl.value = "";
+      outEl.value = "";
+      setCopy(false);
+      toastMsg("Cleared.");
+    };
+
+    copyOutBtn.onclick = async()=>{
+      if(!outEl.value.trim()){ toastMsg("Nothing to copy."); return; }
+      toastMsg(await copy(outEl.value) ? "Output copied." : "Copy failed.");
+    };
+  </script>
+</body>
+</html>
