@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Follow-Up Email Writer — InterviewKit</title>
+  <meta name="description" content="Generate professional follow-up emails after applying or interviewing. Build a prompt, paste into ChatGPT, copy results." />
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#020617;
+      --panel2:#0b1224;
+      --line:#334155;
+      --text:#e5e7eb;
+      --muted:#cbd5f5;
+      --faint:#94a3b8;
+      --brand:#6366f1;
+      --radius:10px;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --max: 960px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a{ color: inherit; text-decoration:none; }
+
+    .container{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 14px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+    .brand h1{ margin:0; font-size: 18px; font-weight: 800; }
+    .brand p{ margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn.primary{ background: var(--brand); color: #fff; }
+    .btn.secondary{ background: transparent; border-color: var(--line); color: var(--text); }
+    .btn.ghost{ background: transparent; color: var(--muted); padding: 10px 10px; }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .inner{ padding: 18px; }
+
+    .titleRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    h2{ margin:0; font-size: 20px; }
+    .sub{ margin: 6px 0 0; color: var(--muted); font-size: 14px; max-width: 80ch; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 980px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    label{
+      display:block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input, textarea, select{
+      width:100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0b1224;
+      color: var(--text);
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    input, select{ height: 42px; }
+    textarea{ min-height: 110px; resize: vertical; }
+    textarea[readonly]{ opacity:.95; }
+
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 980px){
+      .row2{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .hint{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--faint);
+    }
+
+    .cta{
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cta p{ margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+    footer{
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      font-size: 12px;
+      color: var(--faint);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.72);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 750;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+      max-width: calc(100vw - 24px);
+      text-align:center;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="brand">
+        <h1><a href="../index.html">InterviewKit</a></h1>
+        <p>Free tools → full kit</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn ghost" href="../index.html">← Hub</a>
+        <a class="btn primary" id="buyTop" href="#" target="_blank" rel="noopener">Unlock all tools</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="inner">
+        <div class="titleRow">
+          <div>
+            <h2>Follow-Up Email Writer</h2>
+            <p class="sub">
+              Generate professional follow-up emails after applying or interviewing.
+              This builds a structured prompt you can paste into ChatGPT.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="row2">
+              <div>
+                <label for="type">Follow-up type</label>
+                <select id="type">
+                  <option value="application">After applying (no reply yet)</option>
+                  <option value="interview">After an interview</option>
+                  <option value="recruiter">Recruiter outreach follow-up</option>
+                </select>
+              </div>
+              <div>
+                <label for="tone">Tone</label>
+                <select id="tone">
+                  <option value="professional, polite, concise">Professional + concise</option>
+                  <option value="warm, friendly, professional">Warm + friendly</option>
+                  <option value="direct, confident, respectful">Direct + confident</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row2" style="margin-top:10px;">
+              <div>
+                <label for="company">Company</label>
+                <input id="company" placeholder="e.g., Acme Inc." />
+              </div>
+              <div>
+                <label for="role">Role title</label>
+                <input id="role" placeholder="e.g., Operations Analyst" />
+              </div>
+            </div>
+
+            <div class="row2" style="margin-top:10px;">
+              <div>
+                <label for="recipient">Recipient name (optional)</label>
+                <input id="recipient" placeholder="e.g., Jordan" />
+              </div>
+              <div>
+                <label for="days">Days since last message</label>
+                <input id="days" placeholder="e.g., 5" />
+              </div>
+            </div>
+
+            <label for="context" style="margin-top:10px;">Context (what happened + any value you can add)</label>
+            <textarea id="context" placeholder="Examples:&#10;• I applied on [date]&#10;• I interviewed on [date] with [names]&#10;• Key strengths / 1 relevant project&#10;• A quick value-add (idea, resource, link, result)"></textarea>
+
+            <div class="actions">
+              <button class="btn primary" id="build">Build prompt</button>
+              <button class="btn secondary" id="copyPrompt" disabled>Copy prompt</button>
+              <button class="btn secondary" id="clear">Clear</button>
+            </div>
+
+            <div class="hint">Tip: If you can include one small value-add, reply rates increase.</div>
+          </div>
+
+          <div>
+            <label for="prompt">Prompt (paste into ChatGPT)</label>
+            <textarea id="prompt" readonly placeholder="Your prompt will appear here."></textarea>
+
+            <div class="actions">
+              <button class="btn secondary" id="copyPrompt2" disabled>Copy prompt</button>
+            </div>
+
+            <label for="output" style="margin-top:12px;">Output (optional)</label>
+            <textarea id="output" placeholder="Paste ChatGPT results here (optional)..."></textarea>
+
+            <div class="actions">
+              <button class="btn secondary" id="copyOut">Copy output</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <div>
+            <strong>Want the full outreach workflow?</strong>
+            <p>Unlock tools for recruiter outreach, follow-ups, thank-you notes, and negotiation scripts.</p>
+          </div>
+          <a class="btn primary" id="buyBottom" href="#" target="_blank" rel="noopener">Unlock all tools</a>
+        </div>
+
+        <footer>
+          <div>© <span id="year"></span> InterviewKit</div>
+          <div>Digital product • One-time purchase</div>
+        </footer>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const CHECKOUT_URL = "https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03";
+    document.getElementById("buyTop").href = CHECKOUT_URL;
+    document.getElementById("buyBottom").href = CHECKOUT_URL;
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const typeEl = document.getElementById("type");
+    const toneEl = document.getElementById("tone");
+    const companyEl = document.getElementById("company");
+    const roleEl = document.getElementById("role");
+    const recipientEl = document.getElementById("recipient");
+    const daysEl = document.getElementById("days");
+    const contextEl = document.getElementById("context");
+
+    const promptEl = document.getElementById("prompt");
+    const outEl = document.getElementById("output");
+
+    const buildBtn = document.getElementById("build");
+    const copy1 = document.getElementById("copyPrompt");
+    const copy2 = document.getElementById("copyPrompt2");
+    const clearBtn = document.getElementById("clear");
+    const copyOutBtn = document.getElementById("copyOut");
+
+    const toast = document.getElementById("toast");
+    let timer;
+
+    function toastMsg(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(timer);
+      timer = setTimeout(()=>toast.classList.remove("show"), 1400);
+    }
+    function setCopy(enabled){
+      copy1.disabled = !enabled;
+      copy2.disabled = !enabled;
+    }
+    async function copy(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch{ return false; }
+    }
+
+    buildBtn.onclick = () => {
+      const type = typeEl.value;
+      const tone = toneEl.value;
+      const company = companyEl.value.trim();
+      const role = roleEl.value.trim();
+      const recipient = recipientEl.value.trim();
+      const days = daysEl.value.trim() || "[N]";
+      const context = contextEl.value.trim();
+
+      if(!company || !role || !context){
+        toastMsg("Company, role, and context are required.");
+        return;
+      }
+
+      const typeLabel = type === "application"
+        ? "follow-up after submitting an application"
+        : type === "interview"
+          ? "follow-up after an interview"
+          : "follow-up after recruiter outreach";
+
+      const prompt = `You are a professional career coach and recruiter.
+
+Task: Write 3 follow-up email options for a ${typeLabel}.
+
+Constraints:
+- Tone: ${tone}
+- Keep each email short and skimmable (80–140 words).
+- Include a clear subject line for each option.
+- Personalize using the details provided.
+- Mention it's been ${days} day(s) since the last message.
+- End with a simple CTA (e.g., "Is there a good time to connect this week?").
+- Avoid sounding desperate.
+
+Output exactly:
+Option 1 (Short):
+Subject:
+Body:
+
+Option 2 (Polite + Value):
+Subject:
+Body:
+
+Option 3 (Direct):
+Subject:
+Body:
+
+Company: ${company}
+Role: ${role}
+Recipient Name (optional): ${recipient || "[Name]"}
+
+Context:
+"""
+${context}
+"""`;
+
+      promptEl.value = prompt;
+      setCopy(true);
+      toastMsg("Prompt built.");
+    };
+
+    copy1.onclick = async()=> toastMsg(await copy(promptEl.value) ? "Prompt copied." : "Copy failed.");
+    copy2.onclick = async()=> toastMsg(await copy(promptEl.value) ? "Prompt copied." : "Copy failed.");
+
+    clearBtn.onclick = ()=>{
+      typeEl.value = "application";
+      toneEl.value = "professional, polite, concise";
+      companyEl.value = "";
+      roleEl.value = "";
+      recipientEl.value = "";
+      daysEl.value = "";
+      contextEl.value = "";
+      promptEl.value = "";
+      outEl.value = "";
+      setCopy(false);
+      toastMsg("Cleared.");
+      companyEl.focus();
+    };
+
+    copyOutBtn.onclick = async()=>{
+      if(!outEl.value.trim()){ toastMsg("Nothing to copy."); return; }
+      toastMsg(await copy(outEl.value) ? "Output copied." : "Copy failed.");
+    };
+  </script>
+</body>
+</html>
