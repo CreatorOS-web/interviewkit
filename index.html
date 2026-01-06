@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,87 +6,158 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Practical job-search tools for resumes, ATS keywords, and interviews.">
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
+    :root{
+      --bg:#0f172a;
+      --panel:#020617;
+      --panel2:#0b1224;
+      --line:#334155;
+      --text:#e5e7eb;
+      --muted:#cbd5f5;
+      --faint:#94a3b8;
+      --brand:#6366f1;
+      --radius:10px;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --max: 960px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
-    a { color: inherit; text-decoration: none; }
-    .container {
-      max-width: 960px;
+    a{ color: inherit; text-decoration: none; }
+
+    .container{
+      max-width: var(--max);
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 40px 20px 60px;
     }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 40px;
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 14px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
     }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 700;
+    .brand h1{
+      margin:0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing:.2px;
     }
-    header p {
-      margin: 4px 0 0;
+    .brand p{
+      margin: 6px 0 0;
       font-size: 14px;
-      color: #cbd5f5;
+      color: var(--muted);
+      max-width: 70ch;
     }
-    .btn {
-      padding: 10px 16px;
-      border-radius: 6px;
-      background: #6366f1;
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .btn.secondary {
-      background: transparent;
-      border: 1px solid #475569;
-      color: #e5e7eb;
-    }
-    section {
-      margin-bottom: 48px;
-    }
-    h2 {
-      font-size: 20px;
-      margin-bottom: 12px;
-    }
-    .steps li {
-      margin-bottom: 6px;
-    }
-    .tools {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-    }
-    .tool {
-      border: 1px solid #334155;
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 14px;
       border-radius: 8px;
-      padding: 16px;
-      background: #020617;
-    }
-    .tool h3 {
-      margin-top: 0;
-      margin-bottom: 6px;
-      font-size: 16px;
-    }
-    .tool p {
+      font-weight: 800;
       font-size: 14px;
-      color: #cbd5f5;
-      margin-bottom: 12px;
+      border: 1px solid transparent;
+      cursor:pointer;
+      transition: transform .12s ease, opacity .12s ease, background .12s ease, border-color .12s ease;
+      white-space: nowrap;
     }
-    .locked {
-      opacity: 0.6;
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px); }
+    .btn.primary{ background: var(--brand); color:#fff; }
+    .btn.secondary{ background: transparent; border-color: var(--line); color: var(--text); }
+
+    section{ margin-bottom: 40px; }
+
+    .card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
     }
-    footer {
-      border-top: 1px solid #334155;
-      padding-top: 20px;
+
+    h2{
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing:.1px;
+    }
+    p{ margin: 0 0 10px; }
+    .small{ color: var(--faint); font-size: 12px; }
+
+    .tools{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .tool{
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      background: var(--panel2);
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 170px;
+    }
+    .tool h3{
+      margin:0;
+      font-size: 15px;
+      font-weight: 900;
+    }
+    .tool p{
+      margin:0;
       font-size: 13px;
-      color: #94a3b8;
+      color: var(--muted);
+    }
+    .tool .actions{
+      margin-top:auto;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+
+    .list{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .ctaRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .ctaRow strong{ display:block; }
+    .ctaRow span{ color: var(--muted); font-size: 13px; }
+
+    footer{
+      margin-top: 26px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      font-size: 12px;
+      color: var(--faint);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap: wrap;
+      gap: 10px;
     }
   </style>
 </head>
@@ -96,75 +166,122 @@
   <div class="container">
 
     <header>
-      <div>
+      <div class="brand">
         <h1>InterviewKit</h1>
-        <p>Practical job-search tools for resumes, ATS keywords, and interviews.</p>
+        <p>Practical job-search tools for resumes, ATS keywords, cover letters, and interviews. Use the free tools below or unlock the full kit.</p>
       </div>
-      <a class="btn" href="https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03" target="_blank">Unlock all tools</a>
+      <a class="btn primary" href="https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03" target="_blank" rel="noopener">Unlock all tools</a>
     </header>
 
-    <section>
+    <section class="card">
       <h2>How this works</h2>
-      <p>
-        InterviewKit helps you generate clear, structured prompts you can paste into ChatGPT.
-        You then copy the results directly into your resume, emails, or interview notes.
-      </p>
-      <ol class="steps">
+      <p>Each tool generates a clean, structured prompt you can paste into ChatGPT. Then you copy the result into your resume, email, or interview notes.</p>
+      <ol class="list">
         <li>Choose a tool</li>
         <li>Paste your information</li>
-        <li>Generate a prompt</li>
-        <li>Paste it into ChatGPT</li>
+        <li>Build the prompt</li>
+        <li>Paste into ChatGPT</li>
         <li>Copy the result into your application</li>
       </ol>
-    </section>
 
-    <section>
-      <h2>Free tools</h2>
-      <div class="tools">
-        <div class="tool">
-          <h3>ATS Keyword Extractor</h3>
-          <p>Extract ATS-friendly keywords from a job description to align your resume.</p>
-          <a class="btn secondary" href="tools/ats-keyword-extractor.html">Use tool</a>
+      <div class="ctaRow">
+        <div>
+          <strong>Want everything in one place?</strong>
+          <span>Unlock the full toolkit with templates, prompts, and extra tools.</span>
         </div>
-
-        <div class="tool">
-          <h3>Resume Bullet Rewriter</h3>
-          <p>Rewrite weak resume bullets into clear, quantified, impact-focused statements.</p>
-          <a class="btn secondary" href="tools/resume-bullet-rewriter.html">Use tool</a>
-        </div>
-
-        <div class="tool">
-          <h3>Interview Answer Generator (STAR)</h3>
-          <p>Generate structured interview answers using the STAR framework.</p>
-          <a class="btn secondary" href="tools/interview-answer-generator.html">Use tool</a>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn secondary" href="#free">Try the free tools</a>
+          <a class="btn primary" href="https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03" target="_blank" rel="noopener">Unlock all tools</a>
         </div>
       </div>
     </section>
 
-    <section>
+    <section class="card" id="free">
+      <h2>Free tools</h2>
+      <p class="small">No account needed. These tools are free to use.</p>
+
+      <div class="tools">
+        <div class="tool">
+          <div>
+            <h3>ATS Keyword Extractor</h3>
+            <p>Extract ATS-friendly keywords from a job description to align your resume.</p>
+          </div>
+          <div class="actions">
+            <a class="btn secondary" href="tools/ats-keyword-extractor.html">Use tool</a>
+          </div>
+        </div>
+
+        <div class="tool">
+          <div>
+            <h3>Resume Bullet Rewriter</h3>
+            <p>Rewrite weak resume bullets into clear, quantified, impact-focused statements.</p>
+          </div>
+          <div class="actions">
+            <a class="btn secondary" href="tools/resume-bullet-rewriter.html">Use tool</a>
+          </div>
+        </div>
+
+        <div class="tool">
+          <div>
+            <h3>Interview Answer Generator (STAR)</h3>
+            <p>Generate structured interview answers using the STAR framework for behavioral questions.</p>
+          </div>
+          <div class="actions">
+            <a class="btn secondary" href="tools/interview-answer-generator.html">Use tool</a>
+          </div>
+        </div>
+
+        <div class="tool">
+          <div>
+            <h3>Cover Letter Generator</h3>
+            <p>Create a short tailored cover letter plus a super-short email/LinkedIn version.</p>
+          </div>
+          <div class="actions">
+            <a class="btn secondary" href="tools/cover-letter-generator.html">Use tool</a>
+          </div>
+        </div>
+
+        <div class="tool">
+          <div>
+            <h3>Follow-Up Email Writer</h3>
+            <p>Generate 3 follow-up email options after applying, interviewing, or recruiter outreach.</p>
+          </div>
+          <div class="actions">
+            <a class="btn secondary" href="tools/follow-up-email-writer.html">Use tool</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="included">
       <h2>Included in the full toolkit</h2>
-      <p>Upgrade to unlock the complete InterviewKit and streamline your entire job-search workflow.</p>
-      <ul class="locked">
+      <p>Upgrade to unlock additional tools that cover the full job-search workflow.</p>
+      <ul class="list">
         <li>Resume summary generator</li>
         <li>Experience section tailor</li>
         <li>Skills section builder</li>
         <li>Resume gap explanation writer</li>
-        <li>Cover letter generator</li>
         <li>Recruiter outreach emails</li>
-        <li>Application follow-ups</li>
-        <li>Interview thank-you emails</li>
+        <li>Application follow-ups + thank-you emails</li>
         <li>Salary negotiation scripts</li>
-        <li>LinkedIn profile optimizers</li>
-        <li>Bonus prompt pack</li>
+        <li>LinkedIn headline + “About” optimizers</li>
+        <li>ATS resume checklist + bonus prompt pack</li>
       </ul>
-      <br>
-      <a class="btn" href="https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03" target="_blank">
-        Unlock all tools (one-time purchase)
-      </a>
+
+      <div class="ctaRow">
+        <div>
+          <strong>Unlock the full kit</strong>
+          <span>One-time purchase. Instant access.</span>
+        </div>
+        <a class="btn primary" href="https://buy.stripe.com/14A7sL0aGgTaarRdW9eAg03" target="_blank" rel="noopener">
+          Unlock all tools
+        </a>
+      </div>
     </section>
 
     <footer>
-      © 2026 InterviewKit · Digital product · One-time purchase
+      <div>© 2026 InterviewKit</div>
+      <div>Digital product • One-time purchase</div>
     </footer>
 
   </div>
